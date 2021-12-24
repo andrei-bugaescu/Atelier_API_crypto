@@ -1,0 +1,195 @@
+import requests
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import json
+from pandas import DataFrame
+
+pip install pycoingecko
+
+from pycoingecko import CoinGeckoAPI
+cg = CoinGeckoAPI()
+
+cg.get_price(ids='bitcoin', vs_currencies='usd')
+
+coins_markets = cg.get_coins_markets(vs_currency='usd',)[0:50]
+coins_markets
+
+df_market.info()
+
+df_market =pd.json_normalize(coins_markets)
+df_market.head()
+
+import plotly.graph_objects as go
+
+import plotly.express as px
+df = px.data.tips()
+fig = px.bar(df_market, x="name", y='market_cap', color = 'name', title="Market cap per currencies")
+
+fig.update_layout(title_x = 0.5)
+fig.update_xaxes(title = 'Crypto currency')
+fig.update_yaxes(title = 'Market capitalization')
+fig.layout.showlegend = False
+
+fig.show()
+
+
+fig = px.scatter(df_market, x="name", y='market_cap',size="market_cap",color="symbol",title='xxx')
+fig.show()
+
+
+fig = px.scatter(df_market, x="current_price", y='total_volume',size="market_cap",color="symbol",title='xxx')
+fig.show()
+
+
+import plotly.express as px
+df = px.data.stocks()
+fig = px.line(df_market, x="name", y=df_market.market_cap,
+              
+              title='')
+fig.show() 
+
+df_solana = df_market[df_market["name"]=="Solana"]
+df_solana
+
+
+data = cg.get_coin_market_chart_by_id(id='solana',vs_currency ="usd",days="max", localization='false')
+data
+
+
+data["market_caps"]
+
+pd.DataFrame.from_dict(data)
+
+pd.json_normalize((data), record_path="prices").head(5)
+
+solana_price_data = data['prices']
+
+solana_market_caps_data= data['market_caps']
+
+solana_volumes= data['total_volumes']
+
+solana_price_data[0:5]
+
+data1 = pd.DataFrame(solana_price_data, columns=['TimeStamp', 'Price'])
+data2 = pd.DataFrame(solana_market_caps_data, columns=['TimeStamp', 'market_caps'])
+data3 = pd.DataFrame(solana_volumes, columns=['TimeStamp', 'volumes'])
+
+solana_df= data1.merge( data2, how='inner', on="TimeStamp")
+
+solana_coin= solana_df.merge( data3, how='inner', on="TimeStamp")
+
+solana_coin
+
+
+import datetime
+
+data
+
+solana_coin['date'] = solana_coin['TimeStamp'].apply(lambda d: datetime.date.fromtimestamp(d/1000.0))
+
+solana_coin
+
+fig = go.Figure(data=[go.Candlestick(x=candlestick_data['date'],
+                open=candlestick_data['Price']['first'], 
+                high=candlestick_data['Price']['max'],
+                low=candlestick_data['Price']['min'], 
+                close=candlestick_data['Price']['last'])
+                ])
+
+fig.update_layout(xaxis_rangeslider_visible=False)
+
+fig.show()
+
+
+import plotly.express as px
+
+fig = px.line(solana_coin, x="date", y="Price",
+              
+              title='Solana evolution ($)')
+fig.update_layout(
+    xaxis=dict(
+        rangeselector=dict(
+            buttons=list([
+                dict(count=1,
+                     label="1m",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=6,
+                     label="6m",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=1,
+                     label="YTD",
+                     step="year",
+                     stepmode="todate"),
+                dict(count=1,
+                     label="1y",
+                     step="year",
+                     stepmode="backward"),
+                dict(step="all")
+            ])
+        ),
+        rangeslider=dict(
+            visible=True
+        ),
+        type="date"
+    )
+)
+
+
+fig.show()
+
+
+
+fig = px.line(solana_coin, x="date", y="market_caps",
+              
+              title='Solana evolution of market_caps($)')
+
+fig.update_layout(
+    xaxis=dict(
+        rangeselector=dict(
+            buttons=list([
+                dict(count=1,
+                     label="1m",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=6,
+                     label="6m",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=1,
+                     label="YTD",
+                     step="year",
+                     stepmode="todate"),
+                dict(count=1,
+                     label="1y",
+                     step="year",
+                     stepmode="backward"),
+                dict(step="all")
+            ])
+        ),
+        rangeslider=dict(
+            visible=True
+        ),
+        type="date"
+    )
+)
+
+
+fig.show()
+
+
+
+cg.get_price(ids='solana', vs_currencies='usd', include_24hr_change = True, include_last_updated_at = True, include_24hr_vol = True, include_market_cap = True)
+
+dict = cg.get_price(ids='solana', vs_currencies='usd', include_24hr_change = True, include_last_updated_at = False, include_24hr_vol = True, include_market_cap = True)
+
+dict["solana"]
+
+
+
+
+
+
